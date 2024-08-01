@@ -26,7 +26,7 @@ helm search repo web --versions # 애플리케이션 검색
 <br>
 패키지(차트) 구조 <br>
 
-![image](../assets/images/chart_arc.png)
+![image](https://limhyunjune.github.io/assets/images/chart_arc.png)
 - 차트는 압축 파일 형태로 패키징되며 차트 이름과 버전이 부여됨
 - 압축 파일에는 디렉토리가 들어있는데 이 디렉토리 이름이 차트 이름이 됨
 - `Chart.yaml`
@@ -75,7 +75,7 @@ metadata:
 
 <br>
 
-![image](../assets/images/web-ping.png)
+![image](https://limhyunjune.github.io/assets/images/web-ping.png)
 
 ```
 helm lint web-ping
@@ -86,6 +86,7 @@ helm lint web-ping
 helm install wp1 web-ping
 ```
 <br>
+
 web-ping-deployment.yaml
 
 ```yaml
@@ -121,7 +122,7 @@ spec:
 
 <br>
 
-```yaml
+```
 helm install --set targetUrl=kiamol.net wp2 web-ping/
 ```
 - 요청 대상 url을 달리하여 wp2라는 이름으로 릴리즈 추가 배치
@@ -237,7 +238,7 @@ helm get values vweb -o yaml > vweb-valuse.yaml
 helm upgrade -f vweb-values.yaml --atomic vweb kiamol/vweb --version 2.0.0
 ```
 - 롤백은 리비전을 지정해서 확인
-```yaml
+```
 helm rollback vweb 2
 ```
 
