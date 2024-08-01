@@ -24,7 +24,8 @@ helm search repo web --versions # 애플리케이션 검색
 - 설치된 차트를 `release`라고 함. 릴리즈는 이름을 붙일 수 있고 릴리즈 이름을 달리해가며 같은 차트를 여러번 설치 가능
 
 <br>
-패키지(차트) 구조 <br>
+
+**패키지(차트) 구조** 
 
 ![image](https://limhyunjune.github.io/assets/images/chart_arc.png)
 - 차트는 압축 파일 형태로 패키징되며 차트 이름과 버전이 부여됨
@@ -61,7 +62,7 @@ helm ls
 ### 헬름으로 애플리케이션 패키징
 
 - 애플리케이션의 매니페스트 (yaml) 파일을 모으고, 파라미터 값을 선정하고, 정의상 실제 설정 값을 템플릿 변수로 수정
-```yaml
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -90,9 +91,9 @@ helm install wp1 web-ping
 ```
 <br>
 
-web-ping-deployment.yaml
+**web-ping-deployment.yaml**
 
-```yaml
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -164,8 +165,8 @@ helm install --set targetUrl=kiamol.net wp2 web-ping/
 
 ### 차트 간 의존 관계 모델링
 
-Chart.yaml
-```yaml
+**Chart.yaml**
+```
 apiVersion: v2 # 헬름 정의 규격 버전
 name: pi # 차트 이름
 description: A Pi calculator 
@@ -185,8 +186,8 @@ dependencies: # 이 차트가 의존하는 다른 차트
 - proxy 차트를 의존 차트로 사용하기 위해서 상의 차트 정의에서 의존 차트 목록에 추가하여 하위 차트로 삼아야 함
 - 이후 하위 차트 설정 값을 상위 차트의 정의 에서 지정
 
-values.yaml
-```yaml
+**values.yaml**
+```
 # number of app Pods to run
 replicaCount: 2
 # type of the app Service:
