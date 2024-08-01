@@ -82,6 +82,7 @@ helm lint web-ping
 ```
 - `lint` : 유효성 검증, 차트 설치에 실패할 수 있는 원인을 출력해줌
 - 대상 차트는 압축 파일이 아니어도 가능, 차트 디렉토리에서 작업 가능
+
 ```
 helm install wp1 web-ping
 ```
@@ -139,9 +140,12 @@ helm install --set targetUrl=kiamol.net wp2 web-ping/
 #### 차트 리포지토리에 배포
 1) 차트 패키징 <br>
    ```helm package web-ping```
+<br>
 2) 패키징 된 압축 파일 차트 뮤지엄에 업로드 <br>
    ```curl --data-binary "@web-ping-0.1.0.tgz" {차트 뮤지엄 url}```
+<br>
 3) 리포지토리 인덱스에 새로운 차트 정보 추가 -> 차트 뮤지엄이 대신 해줌
+<br>
 4) ```curl {차트 뮤지엄 주소}/index.yaml``` <br>
   차트가 추가 되었는지 확인 가능
 
