@@ -228,7 +228,7 @@ proxy: # proxy 설정 값
 - 현재 vweb 차트 1.0.0 버전이 설치된 상태
 - 새 버전의 차트의 설정 값 확인
   - `helm show values kiamol/vweb --version 2.0.0`
-- 기존 릴리즈 설정 ㄱ밧을 재사용하여 버전 2.0.0 업그레이드
+- 기존 릴리즈 설정 값을 재사용하여 버전 2.0.0 업그레이드
   - `helm upgrade --reuse-values --atomic vweb kiamol/vweb --version 2.0.0`
     - `--atomic` : 모든 리소스의 업그레이드를 기다리다가 일부 실패 시 전부 롤백
     - 릴리즈 명은 기존과 동일해야 함. 다를 경우 upgrade가 아닌 install 사용
