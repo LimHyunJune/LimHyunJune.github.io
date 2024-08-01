@@ -1,7 +1,8 @@
 ---
 layout: post
 title: 헬름을 이용한 애플리케이션 패키징 및 관리
-subtitle: 
+subtitle:
+excerpt_image: https://limhyunjune.github.io//assets/images/chart_arc.png
 author: Hyunjune
 categories: kubernetes
 tags: helm
