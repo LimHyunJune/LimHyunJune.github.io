@@ -6,7 +6,7 @@ author: Hyunjune
 categories: kubernetes
 tags: helm
 ---
-
+{% raw %}
 ### 헬름이 제공하는 기능
 - 헬름 사용 시 여러 개의 YAML 정의 및 스크립트를 하나의 아티팩트로 묶어 공개 또는 비공개 리포지토리에 공유 가능
 - 헬름 프로젝트는 CNCF에서 관리함
@@ -62,7 +62,7 @@ helm ls
 ### 헬름으로 애플리케이션 패키징
 
 - 애플리케이션의 매니페스트 (yaml) 파일을 모으고, 파라미터 값을 선정하고, 정의상 실제 설정 값을 템플릿 변수로 수정
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -93,7 +93,7 @@ helm install wp1 web-ping
 
 **web-ping-deployment.yaml**
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -166,7 +166,7 @@ helm install --set targetUrl=kiamol.net wp2 web-ping/
 ### 차트 간 의존 관계 모델링
 
 **Chart.yaml**
-```
+```yaml
 apiVersion: v2 # 헬름 정의 규격 버전
 name: pi # 차트 이름
 description: A Pi calculator 
@@ -187,7 +187,7 @@ dependencies: # 이 차트가 의존하는 다른 차트
 - 이후 하위 차트 설정 값을 상위 차트의 정의 에서 지정
 
 **values.yaml**
-```
+```yaml
 # number of app Pods to run
 replicaCount: 2
 # type of the app Service:
@@ -258,3 +258,4 @@ helm rollback vweb 2
 ### 헬름 사용에 대한 고찰
 - 매니페스트 파일을 한 번 템플릿 변수로 구성하면 이전으로 돌리기 어려움
 - 따라서 팀에서 helm 사용 시 모두가 함께 사용해야 함
+{% endraw %}
