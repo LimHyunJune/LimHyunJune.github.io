@@ -54,6 +54,8 @@ helm upgrade --set replicatCount=3 ch10-vweb kiamol/vweb --version 1.0.0
 ```
 helm ls
 ```
+
+<br>
 <hr>
 
 ### 헬름으로 애플리케이션 패키징
@@ -146,8 +148,9 @@ helm install --set targetUrl=kiamol.net wp2 web-ping/
 <br>
 3) 리포지토리 인덱스에 새로운 차트 정보 추가 -> 차트 뮤지엄이 대신 해줌
 <br>
-4) ```curl {차트 뮤지엄 주소}/index.yaml``` <br>
-  차트가 추가 되었는지 확인 가능
+4) 차트가 추가 되었는지 확인 가능 <br>
+```curl {차트 뮤지엄 주소}/index.yaml``` 
+  
 
 <br>
 
@@ -156,6 +159,7 @@ helm install --set targetUrl=kiamol.net wp2 web-ping/
 - 환경 별로 설정 값 따로 저장 가능
 - 버전 지정하지 않으면 가장 최신 차트가 설치됨
 
+<br>
 <hr>
 
 ### 차트 간 의존 관계 모델링
@@ -217,6 +221,7 @@ proxy: # proxy 설정 값
 - ``helm install --set serviceType=ClusterIP --set proxy.enabled=true pi1 ./pi``
   - 상위 차트 설치 시 하위 차트의 압축을 풀어서 함께 설치
 
+<br>
 <hr>
 
 ### 헬름 릴리즈의 업그레이드와 롤백
@@ -246,6 +251,7 @@ helm upgrade -f vweb-values.yaml --atomic vweb kiamol/vweb --version 2.0.0
 helm rollback vweb 2
 ```
 
+<br>
 <hr>
 
 ### 헬름 사용에 대한 고찰
