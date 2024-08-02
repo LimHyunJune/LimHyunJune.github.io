@@ -2,7 +2,7 @@
 layout: post
 title: Apache Kafka Producer
 subtitle:
-excerpt_image: 
+excerpt_image: https://limhyunjune.github.io/assets/images/producer.png
 author: Hyunjune
 categories: kafka
 tags: producer
