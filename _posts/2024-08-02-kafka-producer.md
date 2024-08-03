@@ -32,7 +32,14 @@ kafkaProducer.send(producerRecord);
 kafkaProducer.flush();
 kafkaProducer.close();
 ```
-- kafka에서 제공하는 serializer
+
+
+<br>
+<hr>
+
+### Serialized Message 전송
+
+#### kafka에서 제공하는 serializer
   - StringSerializer
   - ShortSerializer
   - IntegerSerializer
@@ -40,8 +47,13 @@ kafkaProducer.close();
   - LongSerializer
   - BytesSerializer
 
+#### 자바 Object Serialization
+- 객체의 유형, 데이터의 포맷, 적용 시스템에 상관없이 이동/저장/복원을 자유롭게 하기 위해서 바이트 스트림으로 저장하는 것
+
+
 <br>
 <hr>
+
 
 ## Producer 메시지 파티셔닝
 
@@ -164,6 +176,7 @@ public class CustomPartitioner implements Partitioner {
 #### Sync 방식
 - Producer는 broker로부터 해당 메시지를 성공적으로 받았다는 Ack 메시지를 받은 후 메시지 전송
 - 동기 처리시 1개씩 전송하며 ack를 받아야 하므로 batch 처리 불가능, 전송은 batch 레벨이지만 메시지는 1개
+
 ```java
 Future<RecordMetadata> future = producer.send();
 RecordMetadata metadata = future.get();
