@@ -164,8 +164,6 @@ public class CustomPartitioner implements Partitioner {
 #### Sync 방식
 - Producer는 broker로부터 해당 메시지를 성공적으로 받았다는 Ack 메시지를 받은 후 메시지 전송
 - 동기 처리시 1개씩 전송하며 ack를 받아야 하므로 batch 처리 불가능, 전송은 batch 레벨이지만 메시지는 1개
-
-동기화 코드
 ```java
 Future<RecordMetadata> future = producer.send();
 RecordMetadata metadata = future.get();
@@ -173,6 +171,8 @@ RecordMetadata metadata = future.get();
 # inline
 RecordMetadata metadata = producer.send().get();
 ```
+
+<br>
 
 #### Async 방식
 - Callback을 이용한 비동기 메시지 전송 가능
@@ -193,8 +193,11 @@ producer.send(producerRecord, new Callback() {
   }
 ```
 
+<br>
+
 #### Custom Callback 생성
 - Callback 인터페이스 상속
+
 ```java
 public class CustomCallback implements Callback{
   @Override
