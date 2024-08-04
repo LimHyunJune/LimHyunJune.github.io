@@ -168,6 +168,7 @@ public class CustomPartitioner implements Partitioner {
 #### max.inflight.requests.per.connection
 - 한 번에 전송 가능한 메시지 배치 개수 (default=5)
 - 1보다 큰 경우 일부 배치의 전송 실패 시 순서 뒤집힐 수 있음
+![img.png](https://limhyunjune.github.io/assets/images/outorder.png)
 
 <br>
 <hr>
@@ -230,6 +231,92 @@ public class CustomCallback implements Callback{
 
 <br>
 <hr>
+
+### 메시지 전송/재전송 시간 파라미터 이해
+![img.png](https://limhyunjune.github.io/assets/images/retry.png)
+- acks = 1 or all 인 동기식 전송에 적용됨
+- max.block.ms
+  - send() 호출 시 RecordAccumulator 입력이 block되는 최대 시간, 초과 시 TimeoutException
+- linger.ms
+  - sender Thread가 RecordAccumulator에서 배치 별로 가져가기 위한 최대 대기 시간
+- request.timeout.ms
+  - 전송에 걸리는 최대 대기 시간
+  - 초과 시 retry 또는 timeout
+- retry.backoff.ms
+  - 재전송을 위한 대기 시간
+- delivery.timeout.ms
+  - 재전송을 포함하여 producer 메시지 전송에 허용된 최대 시간
+  - 초과 시 TimeoutException
+- `delivery.timeout.ms >= linger.ms + request.timeout.ms`
+
+#### retries와 delivery.timeout.ms
+```
+retries = 2147483647 (MAX INT)
+delivery.timeout.ms = 120000
+```
+- retries는 재전송 횟수를 결정
+- delivery.timeout.ms는 메시지 재전송을 멈출 때까지의 시간
+- 보통 retries는 무한대 값으로 설정하고 delivery.timeout.ms (기본 2분)를 조정하는 것을 권장
+
+#### retries와 request.timeout.ms, retry.backoff.ms
+```
+retries = 10
+retry.backoff.ms = 30
+request.timeout.ms = 10000ms
+```
+- retry.backoff.ms는 재전송 주기 시간을 결정
+- 위와 같이 설정 시 전송 후 10000ms 기다린 후 재전송 전 30ms 이후 재전송 시도
+- 이와 같이 10회 수행 후 더 이상 retry 수행하지 않음
+- 만약 10회 이내에 delivery.timeout.ms 도달 시 더 이상 재전송 하지 않음
+
+<br>
+<hr>
+
+### producer 전송 방법
+
+#### 최대 한 번 전송 (at most once)
+- ack=0
+- producer는 broker로부터 받는 ack 또는 에러메시지 없이 다음 메시지를 연속적으로 보냄
+- 메시지는 소실될 수 있지만 중복 전송하지 않음
+
+#### 적어도 한 번 전송 (at least once)
+- acks=1,all, retries>0
+- producer는 broker로부터 ack를 받은 다음에 다음 메시지 전송
+- 메시지 소실은 없지만 중복 전송 가능
+  - 실제로 broker에 전송 되었으나 ack만 전송되지 못한 경우
+
+#### 정확히 한 번 전송 (exactly once)
+- 정확히 한 번 전송 (트랜잭션 처리) != 중복 없이 전송 (멱등성)
+- 중복 없이 전송 (Idempotence)
+  - producer는 producer ID와 sequence를 Header에 담아 전송
+  - 메시지 sequence는 0부터 시작하여 순차적으로 증가
+  - producer ID는 producer 기동 시마다 새롭게 생성됨
+  - 브로커에서는 만약 sequence가 중복인 경우 로그에 기록하지 않고 ack만 전송
+  - 브로커는 자신이 가지고 있는 메시지의 sequence보다 1만큼 큰 경우에만 브로커에 저장
+
+![img.png](https://limhyunjune.github.io/assets/images/nodup.png)
+
+
+#### Idempotence 설정
+- enable.idempotence=true
+- acks=all
+  - acks=1이면 leader가 복제 중 다운되면 메시지 소실
+- retries는 0보다 큰 값
+- max.in.flight.requests.per.connection은 1에서 5사이
+  - producer가 전송 중인 메시지 상태를 추적해야 하므로 관리를 위함
+  - 메시지 순서 바뀌는 것도 보장해야 하므로 상태 추적 필요
+- kafka 3.0부터 producer 기본 설정이 idempotence
+  - idempotence 적용 시 성능이 감소할 수 있지만 적용 권장
+- 만약 기본 설정인 enable.idempotence=true를 유지하고 다른 파라미터를 잘못 설정하면 (예를 들면 acks=1) producer는 메시지 정상적으로 보내지만 idempotence가 적용되지 않음
+- 하지만 명시적으로 enable.idempotence=true를 선언한 뒤에 다른 파라미터 설정 바꾸면 오류 발생
+
+#### Idempotence 기반에서 메시지 전송 순서 유지
+![img.png](https://limhyunjune.github.io/assets/images/idempotence.png)
+
+주의
+- Idempotence는 producer와 broker 사이 retry 시에만 중복 제거를 수행하는 메커니즘
+- 동일 메시지를 send()로 재전송 하는 것은 producer가 재기동되어 PID가 달라지므로 적용되지 않음
+
 
 
 {% endraw %}
