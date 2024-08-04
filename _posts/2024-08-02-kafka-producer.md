@@ -5,7 +5,7 @@ subtitle:
 excerpt_image: https://limhyunjune.github.io/assets/images/producer.png
 author: Hyunjune
 categories: kafka
-tags: producer
+tags: [producer, idempotence, partitioner]
 ---
 {% raw %}
 ### Producer 개요
