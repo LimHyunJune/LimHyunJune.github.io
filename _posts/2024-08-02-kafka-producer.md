@@ -192,6 +192,7 @@ RecordMetadata metadata = producer.send().get();
 - Callback을 이용한 비동기 메시지 전송 가능
   - 비동기적으로 메시지를 보내면서 RecordMetadata를 client가 받을 수 있는 방식 제공
 - Async 전송 시 batch를 통해 전송함
+
 ```java
 producer.send(producerRecord, new Callback() {
   @Override
