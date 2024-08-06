@@ -58,7 +58,7 @@ kafkaProducer.close();
 ## Producer 메시지 파티셔닝
 
 ### key 값을 가지지 않는 메시지 전송
-- 메시지는 producer를 통해 전송 시 partitioner를 통해 어떤 파티셔너로 전송되어야 하는지 미리 결정됨
+- 메시지는 producer를 통해 전송 시 partitioner를 통해 어떤 파티션으로 전송되어야 하는지 미리 결정됨
 - key 값을 가지지 않는 경우 Round Robin, Sticky Partitioning 등의 전략이 선택되어 파티션 별로 메시지가 전송됨
 - Topic이 여러 개의 파티션을 가질 때 `전송 순서가 보장되지 않은 채`로 consumer에서 읽혀질 수 있음
 
