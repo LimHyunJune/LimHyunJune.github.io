@@ -105,13 +105,13 @@ kafkaConsumer.close();
 - partition 매핑 정보
 - consumer의 heartbeat 관리
 
-1) consumer group 내 consumer가 broker에 최초 접속 요청 시 group coordinator가 생성
-2) 동일 group.id로 여러 개의 consumer가 broker의 group coordinator로 접속
-3) 가장 빨리 group에 join 요청 한 consumer에게 leader consumer로 지정
-4) leader는 파티션 할당 전략에 따라 consumer들에게 파티션 할당
-5) leader는 최종 할당 된 파티션 정보를 group coordinator에게 전달
-6) 정보 전달 성공을 공유한 뒤 개별 consumer들은 할당된 파티션에서 메시지 읽음
-
+1) consumer group 내 consumer가 broker에 최초 접속 요청 시 group coordinator가 생성 <br>
+2) 동일 group.id로 여러 개의 consumer가 broker의 group coordinator로 접속 <br>
+3) 가장 빨리 group에 join 요청 한 consumer에게 leader consumer로 지정 <br> 
+4) leader는 파티션 할당 전략에 따라 consumer들에게 파티션 할당 <br>
+5) leader는 최종 할당 된 파티션 정보를 group coordinator에게 전달 <br>
+6) 정보 전달 성공을 공유한 뒤 개별 consumer들은 할당된 파티션에서 메시지 읽음 <br>
+ 
 
 
 {% endraw %}
