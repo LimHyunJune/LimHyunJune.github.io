@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Apache Kafka Producer
+title: Apache Kafka Consumer
 subtitle:
-excerpt_image: https://limhyunjune.github.io/assets/images/producer.png
+excerpt_image: https://limhyunjune.github.io/assets/images/consumer.png
 author: Hyunjune
 categories: kafka
-tags: [producer, idempotence, partitioner]
+tags: [consumer, rebalancing, group coordinator, heartbeat]
 ---
 {% raw %}
 ### Consumer 개요
