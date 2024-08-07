@@ -25,7 +25,7 @@ kafka-console-consumer --bootstrap-server localhost:9092 --group 그룹명 --top
 --property pring.key=true --property print.partition=true
 ```
 
-#### simple consumer
+#### Simple Consumer
 ```java
 String topic = "simple-topic";
 Properties props = new Properties();
@@ -100,7 +100,7 @@ kafkaConsumer.close();
 
 ![img.png](https://limhyunjune.github.io/assets/images/groupcoordinator.png)
 
-#### group coordinator
+#### Group Coordinator
 - consumer들의 join group 정보
 - partition 매핑 정보
 - consumer의 heartbeat 관리
@@ -112,6 +112,40 @@ kafkaConsumer.close();
 5) leader는 최종 할당 된 파티션 정보를 group coordinator에게 전달 <br>
 6) 정보 전달 성공을 공유한 뒤 개별 consumer들은 할당된 파티션에서 메시지 읽음 <br>
  
+#### Consumer Group Status
+![img.png](https://limhyunjune.github.io/assets/images/rebalance.png)
 
+<br>
+<hr>
+
+### Consumer 스태틱 그룹 멤버쉽
+
+- 많은 consumer를 가지는 consumer group에서 rebalance가 발생하면 모든 consumer들이 rebalance를 수행하므로 많은 시간이 소모되고 대량 데이터 처리 시 Lag가 길어질 수 있음
+- 유지 보수 차원의 consuemr restart도 rebalance를 초래하므로 불필요한 rebalance를 발생시키지 않는 법 필요
+
+- consumer group 내의 consumer 들에게  고정된 id 부여
+- consumer 별로 consumer group 최초 조인 시 할당된 파티션을 그대로 유지하고 consumer가 shutdown되어도 `session.timeout.ms` 내에 재기동되면 rebalance 수행되지 않고 기존 파티션이 재할당 됨
+- 스태틱 그룹 멤버십을 적용할 경우 session.timeout.ms를 좀 더 큰 값으로 설정
+
+```java
+props.setProrperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "group-02");
+```
+
+<br>
+<hr>
+
+### Heartbeat와 poll() 관련 주요 파라미터
+
+- heartbeat.interval.ms (default = 3000)
+  - heartbeat thread가 heartbeat를 보내는 간격
+  - session.timeout.ms 보다 작게 설정되어야 함
+  - session.timeout.ms의 1/3 보다 낮게 설정 권장
+- session.timeout.ms
+  - broker(group coordinator)가 consumer에서 오는 heartbeat를 기다리는 최대 시간
+  - 이 시간 내에 heartbeat를 받지 못할 시 rebalancing 명령
+- max.poll.interval.ms
+  - heartbeat는 정상적으로 보내도 실제 polling을 제대로 수행하지 못하는 기능 장애 방지
+  - 이전 poll()을 호출 후 다음 poll()까지 broker가 기다리는 시간
+  - 해당 시간 내에 poll() 요청이 오지 않으면 rebalancing 명령
 
 {% endraw %}
