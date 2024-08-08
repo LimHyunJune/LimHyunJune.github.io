@@ -148,4 +148,114 @@ props.setProrperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "group-02");
   - 이전 poll()을 호출 후 다음 poll()까지 broker가 기다리는 시간
   - 해당 시간 내에 poll() 요청이 오지 않으면 rebalancing 명령
 
+
+<br>
+<hr>
+
+### Wakeup를 이용하여 Consumer 효과적으로 종료
+```java
+Thread mainThread = Thread.currentThread()
+Runtime.getRuntime().addShutdown(new Thread(){
+   public void run()
+   {
+     kafkaConsumer.wakeup();
+     try{
+        mainThread.join();
+     }catch(InterruptedException e)
+     {
+         ... 
+     } 
+   }
+});
+
+try{
+   while(true){
+     consumerRecord<String,String> consumerRecords = kafkaConsumer.poll(Duration.ofMilis(1000)) 
+     for(consumerRecords record : consumerRecords)
+     {
+        log(...)    
+     }
+   }
+}catch(WakeupException e)
+{ 
+    // ignore      
+}finally
+{
+    kafkaConsumer.close();      
+}
+
+
+```
+- while 무한 루프를 중지하기 위해 interrupt signal을 통헤 강제 종료를 시켜야하는데, 그렇게 되면 group coordinator에서 session.timeout까지 consumer의 상태를 알 수 없음
+- shutdown 이벤트 등록해서 mainThread 종료 시 wakeup 호출하도록 명령하고, WakeupException을 발생시켜 무한 루프 탈출
+
+
+<br>
+<hr>
+
+### Consumer Rebalancing Protocol
+
+#### Eager 모드
+- rebalancing 수행 시 기존 consumer의 모든 파티션 할당 취소하고 잠시 메시지를 읽지 않음
+- 이후 새롭게 consumer에 파티션을 할당받고 다시 메시지를 읽음
+- lag가 상대적으로 크게 발생
+- 파티션 할당 전략(`partition.assignment.strategy`) 중 Range, Round Robin, Sticky 방식이 여기에 해당
+
+#### Cooperative 모드
+- rebalance 수행 시 기존 consumer들의 모든 파티션 할당을 취소하지 않고 대상이 되는 consumer들에 대해서 파티션에 따라 점진적으로(Incremental) consumer를 할당해가며 수행
+- 전체 consumer가 메시지 읽기를 중지 하지 않으며 개별 consumer가 협력적으로 영향을 받는 파티션만 Rebalancing
+- 많은 consumer를 가지는 consumer group에서 활용도 높음
+- 파티션 할당 전략 중 Cooperative Sticky에 해당
+
+#### Consumer 파티션 할당 전략 유형
+- Range 할당 전략
+  - 서로 다른 2개 이상의 토픽을 consumer들이 subscribe할 시 토픽 별 동일한 파티션을 특정 consumer에 할당하는 전략
+  - 여러 토픽들에서동일한 키 값으로 되어 있는 파티션을 특정 consumer에 할당하여 해당 consumer가 여러 토픽의 동일 키 값으로 데이터 처리를 용이하게 할 수 있도록 지원
+- Round Robin 할당 전략
+  - 파티션별로 consumer들이 균등하게 부하를 분배할 수 있도록 순차적 할당
+- Sticky 할당 전략
+  - 최근 할당된 파티션과 consumer 매핑을 rebalance 수행되어도 가급적 그대로 유지
+
+
+#### Round Robin과 Range 비교
+![img.png](https://limhyunjune.github.io/assets/images/rrrange.png)
+
+#### Round Robin의 Rebalancing 후 파티션 매핑
+![img.png](https://limhyunjune.github.io/assets/images/rrrebalance.png)
+- rebalancing 후 이전의 파티션과 컨슈머의 매핑이 변경 되기 쉬움
+
+#### Sticky의 Rebalancing 후 파티션 매핑
+![img.png](https://limhyunjune.github.io/assets/images/stickyrevalance.png)
+- 각 토픽의 partition 1,2는 유지 후 3만 나눠서 매핑
+- sticky도 eager이므로 모두 해제 후 다시 할당함
+
+#### Cooperative Sticky의 Rebalancing
+![img.png](https://limhyunjune.github.io/assets/images/cooperative.png)
+- 모든 매핑을 취소하지 않고 기존 매핑을 유지
+- partition 3만 순차적으로 재할당
+
+<br>
+<hr>
+
+### Offset Commit의 이해
+![img.png](https://limhyunjune.github.io/assets/images/offset.png)
+- `__consumer_offsets` 에는 consumer group이 특정 topic의 partition 별로 읽기 commit 한 offset의 정보를 가짐
+- 어느 consumer가 commit 했는지에 대한 정보는 가지지 않음
+- offset 정보는 다음에 읽을 offset임
+
+#### 중복 읽기 상황
+- poll()을 통해 읽어들였으나 commit을 하지 못하고 consumer가 죽는 경우 rebalancing을 통해 해당 파티션을 할당 받은 다른 consumer에서는 중복 읽기 발생
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endraw %}
