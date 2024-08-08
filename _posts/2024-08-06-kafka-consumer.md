@@ -225,7 +225,7 @@ try{
 - rebalancing 후 이전의 파티션과 컨슈머의 매핑이 변경 되기 쉬움
 
 #### Sticky의 Rebalancing 후 파티션 매핑
-![img.png](https://limhyunjune.github.io/assets/images/stickyrevalance.png)
+![img.png](https://limhyunjune.github.io/assets/images/stickyrebalance.png)
 - 각 토픽의 partition 1,2는 유지 후 3만 나눠서 매핑
 - sticky도 eager이므로 모두 해제 후 다시 할당함
 
