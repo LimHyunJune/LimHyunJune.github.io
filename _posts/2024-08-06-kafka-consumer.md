@@ -286,7 +286,7 @@ try{
 ```java
 
 // auto commit 비활성화
-props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "6000");
+// props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "6000");
 props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT, "false");
 props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFI, CooperativeStickyAssignor.class.getName());
 
