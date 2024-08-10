@@ -240,18 +240,102 @@ try{
 ### Offset Commit의 이해
 ![img.png](https://limhyunjune.github.io/assets/images/offset.png)
 - `__consumer_offsets` 에는 consumer group이 특정 topic의 partition 별로 읽기 commit 한 offset의 정보를 가짐
-- 어느 consumer가 commit 했는지에 대한 정보는 가지지 않음
+- 어느 consumer가 commit 했는 지에 대한 정보는 가지지 않음
 - offset 정보는 다음에 읽을 offset임
 
 #### 중복 읽기 상황
 - poll()을 통해 읽어들였으나 commit을 하지 못하고 consumer가 죽는 경우 rebalancing을 통해 해당 파티션을 할당 받은 다른 consumer에서는 중복 읽기 발생
 
+#### 읽기 누락 상황
+- poll() 수행 후 바로 commit, 가져온 데이터를 처리하는 중 consumer가 죽는 경우 이후 consumer에서는 commit 이후 데이터만 가져오므로 누락됨
 
 
 
 
+<br>
+<hr>
+
+### Consumer Offset 적용 유형
+- Auto Commit : 사용자가 코드로 commit을 기술하지 않아도 consumer가 자동으로 지정된 기간마다 commit 수행
+- Manual Commit : 사용자가 명시적으로 commit을 기술, sync와 async가 있음
 
 
+#### Consumer의 Auto Commit
+- 'auto.enable.commit= true' 인 경우 메시지를 브로커에 바로 commit 하지 않고 'auto.commit.interval.ms'에 정해진 주기(default 5초)마다 consumer가 자동으로 commit을 수행
+- 바로 commit 하지 않으므로 consumer가 죽으면 broker의 commit이 실제 consumer가 읽어온 메시지보다 오래되었으므로, 장애/재가동 및 rebalancing 후 브로커에서 이미 읽어온 메시지를 다시 읽어오는 중복 처리 가능성 있음
+- auto.commit.interval.ms에 지정한 시간이 흐른 뒤 수행되는 poll()에서 이전 poll()에서 가져온 메시지에 대한 offset을 commit
+  - 즉 interval마다 commit하는 것은 이전 poll에 대한 offset
+
+
+#### Consumer의 Manual 동기/비동기 Commit
+- Sync 방식
+  - consumer 객체의 `commitSync()` 사용
+  - 메시지 배치를 poll()을 통해서 읽어오고 마지막 offset을 브로커에 commit 적용
+    - commit 시점을 사용자가 지정
+  - broker에 commit 적용이 성공적으로 될 때 까지 blocking 적용
+  - broker에 commit 적용 실패할 경우 다시 commit 적용 요청
+  - 비동기 대비 느림
+- Async 방식
+  - consumer 객체의 commitAsync() 메소드를 사용
+  - broker에 commit 적용이 성공하길 기다리지 않고 계속 메시지 읽어옴
+  - broker에 commit 적용이 실패해도 다시 commit 시도 안함
+  - 따라서 consumer 장애 혹은 rebalance 시 한 번 읽은 메시지를 다시 중복해서 가져올 수 있음
+  - 동기 대비 빠름
+
+
+```java
+
+// auto commit 비활성화
+props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "6000");
+props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT, "false");
+props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFI, CooperativeStickyAssignor.class.getName());
+
+    ...
+
+// commitAsync
+ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+kafkaConsumer.commitAsync(new OffsetConsumerCallback(){
+    @override
+    public void onComplete(...){}
+});
+
+// commitSync
+
+ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+if(consummerRecords.count() > 0)
+    kafkaConsumer.commitSync();
+
+```
+- auto commit은 property에서 `ENABLE_AUTO_COMMIT_CONFIG`를 true로 설정하고 commitSync(), commitAsync()를 호출하지 않을 시 수행 됨
+
+
+<br>
+<hr>
+
+### Consumer에서 Topic의 특정 파티션만 할당하기
+- consumer에게 여러 개의 파티션이 있는 topic에서 특정 파티션만 할당 가능
+- 배치 처리 시 특정 key 레벨의 파티션을 특정 consumer에 할당하여 처리할 경우 적용
+- kafkaConsumer의 assign() 메소드에 TopicPartition 객체로 특정 파티션을 인자로 입력하여 할당
+
+```java
+TopicPartition tp = new TopicPartition(topicName, 0);
+kafkaConsumer.assign(Arrays.asList(tp));
+```
+- 0번 파티션을 할당
+- 할당 되는 파티션은 무조건 leader
+
+<br>
+
+#### Topic 특정 파티션의 특정 offset부터 읽기
+- 특정 메시지가 누락되었을 경우 해당 메시지를 다시 읽어오기 위해 유지보수 차원에서 사용
+
+```java
+TopicPartition tp = new TopicPartition(topicName, 0);
+kafkaConsumer.assign(Arrays.asList(tp));
+kafkaConsumer.seek(tp, 6L)
+```
+- 만약 기존 group id를 사용하는 consumer를 통해 작업을 수행하고 commit 수행 시 __commit_offsets를 갱신 할 수 있으므로 유의
+- manual commit으로 설정하고 commit을 수행하면 안됨 (디버깅 용)
 
 
 
