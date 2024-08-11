@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Apache Kafka Producer
+title: Kafka Producer
 subtitle:
 excerpt_image: https://limhyunjune.github.io/assets/images/producer.png
 author: Hyunjune

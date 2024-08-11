@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Apache Kafka Consumer
+title: Kafka Consumer
 subtitle:
 excerpt_image: https://limhyunjune.github.io/assets/images/consumer.png
 author: Hyunjune

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Zookeeper
+title: Zookeeper 연동
 subtitle:
 excerpt_image: https://limhyunjune.github.io/assets/images/zookeeper.png
 author: Hyunjune
