@@ -48,11 +48,11 @@ zookeeper_shell localhost:2181
 
 ![img.png](https://limhyunjune.github.io/assets/images/leaderelection.png)
 
-1) broker #3이 shutdown되고 zookeeper는 session timeout 동안 heartbeat이 오지 않으므로 해당 broker 노드 정보 갱신
-2) controller는 zookeeper를 모니터링 하던 중 watch event로 broker #3에 대한 down 정보를 받음
-3) controller는 다운된 broker가 관리하던 파티션들에 대해 새로운 leader/follower 결정
-4) 결정된 새로운 leader/follower 정보를 zookeeper에 저장하고 해당 파티션을 복제하는 모든 broker에게 새로운 leader 정보를 전달하여 새로운 leader로부터 복제 수행 요청
-5) controller는 모든 broker에 metadata cache 정보 갱신 요청 
+1) broker #3이 shutdown되고 zookeeper는 session timeout 동안 heartbeat이 오지 않으므로 해당 broker 노드 정보 갱신 <br>
+2) controller는 zookeeper를 모니터링 하던 중 watch event로 broker #3에 대한 down 정보를 받음 <br>
+3) controller는 다운된 broker가 관리하던 파티션들에 대해 새로운 leader/follower 결정 <br>
+4) 결정된 새로운 leader/follower 정보를 zookeeper에 저장하고 해당 파티션을 복제하는 모든 broker에게 새로운 leader 정보를 전달하여 새로운 leader로부터 복제 수행 요청 <br>
+5) controller는 모든 broker에 metadata cache 정보 갱신 요청 <br>
 
 
 
