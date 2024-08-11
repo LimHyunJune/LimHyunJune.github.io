@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Multi Node Kafka Cluster
+title: Multi-node Kafka Cluster
 subtitle:
 excerpt_image: https://limhyunjune.github.io/assets/images/multi.png
 author: Hyunjune
