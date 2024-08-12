@@ -56,6 +56,7 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic 토픽명 --part
 
 #### Leader와 Follower
 - producer와 consumer는 leader 파티션을 통해서만 작업 수행
+  - kafka 2.4 이후 consumer는 follower에서 읽어들일 수 있음
 - replication은 leader에서 follower로만 이루어짐
 - controller (leader broker)가 broker의 replication 관리
 
