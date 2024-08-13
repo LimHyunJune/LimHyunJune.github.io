@@ -50,6 +50,38 @@ kafkaProducer.close();
 #### 자바 Object Serialization
 - 객체의 유형, 데이터의 포맷, 적용 시스템에 상관없이 이동/저장/복원을 자유롭게 하기 위해서 바이트 스트림으로 저장하는 것
 
+#### Custom 데이터 전송
+- kafka 기본 지원 serializer는 String,Long 등의 primitive 기반 object에 대해서만 지원
+
+Serializer 구현
+```java
+public class OrderSerialzer implements Serializer<Order> {
+    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    @override
+    public byte[] serializer(String topic, Order order) {
+        byte[] serializedOrder = null;
+        try {
+            serializedOrder = objectMapper.writeValueAsBytes(order);
+        } catch (JsonProcessingException e) {
+          ...
+        }
+        return serializedOrder;
+    }
+}
+```
+- Java 8의 LocalDateTime은 Jackson에서 기본 지원하지 않음 
+- 따라서 `com.fasterxml.jackson.datatype.jackson-datatype-jsr310`을 추가 import하고 JavaTimeModule을 register 해야함
+
+OrderSerdeProducer
+```java
+props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, OrderSerializer.class.getName());
+
+KafkaProducer<String, Order> kafkaProducer = new KafkaProducer<String, Order>(props);
+ProducerRecord<String,Order> producerRecord = new ProducerRecord<>(topic, key, value);
+kakfaProducer.send(producerRecord);
+```
 
 <br>
 <hr>

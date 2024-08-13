@@ -50,12 +50,46 @@ kafkaConsumer.close();
 - `kafkaConsumer.poll(Duration.ofMillis(1000))` 
   - 가져올 데이터가 하나도 없는 경우 1000ms 만큼 기다린 후 return
 
+#### Custom 데이터 읽기
+
+Deserializer 구현
+```java
+public class OrderDeserialzer implements Deserializer<Order> {
+    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    @override
+    public Order deserializer(String topic, byte[] data) {
+        Order order = null;
+        try {
+          order = objectMapper.readValue(data, Order.class);
+        } catch (IOException e) {
+          ...
+        }
+        return order;
+    }
+}
+```
+OrderSerdeConsumer
+
+```java
+props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, OrderDeserializer.class.getName());
+
+KafkaConsumer<String, Order> kafkaConsumer = new KafkaConsumer<String, Order>(props);
+ConsumerRecords<String,Order> records = kafkaConsumer.poll(Duration.ofMilis(1000));
+```
+
+
+<br>
+
+
 ![img.png](https://limhyunjune.github.io/assets/images/fetcher.png)
 - Fetcher는 Linked Queue에 데이터가 없는 경우 ConsumerClient Network에 데이터를 가져올 것을 요청
 - Linked Queue에 데이터가 있는 경우 Fetcher는 데이터 가져오고 poll() 수행 완료
 
 <br>
 <hr>
+
 
 ### Consumer Fetcher 관련 주요 설정 파라미터
 
