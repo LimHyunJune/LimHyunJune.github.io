@@ -59,6 +59,7 @@ kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-n
 ```
 
 - 적용된 설정 값 확인
+
 ```
 kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 브로커번호 --all --describe
 | grep {policy or retention or cleaner}
