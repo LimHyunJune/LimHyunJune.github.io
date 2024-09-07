@@ -297,6 +297,7 @@ show variables like `%time_zone%`;
 - 주요 속성
   - `regex` : topic 명 매칭을 위한 정규 표현식
   - `replacement` : 매칭된 표현식에 대체될 문자열
+
 ```json
 {
   "name" : "mysql_jdbc_om_source",
@@ -315,13 +316,12 @@ show variables like `%time_zone%`;
     "transforms.extract_key.field" : "customer_id"
   }
 }
-
 ```
+
 - 정규 표현식
   - `.` : 임의 단일 문자
   - `*` : 0번 이상 반복 가능
   - `.*`는 임의의 문자열을 의미하지만 `(.*)`으로 그룹핑하면 매칭 결과를 반환 가능. 이를 replacement의 `$1`에서 받아서 적용
-
 
 <br>
 <hr>
@@ -337,6 +337,7 @@ show variables like `%time_zone%`;
 <hr>
 
 ### 환경 구성
+
 ```
 create database om_sink;
 grant all privileges on om_sink.* to 'connect_dev'@'%' with grant option;
@@ -352,6 +353,7 @@ create table customer_sink(
 <hr>
 
 ### JDBC Sink Connector Config
+
 ```json
 {
   "name" : "mysql_jdbc_sink",
