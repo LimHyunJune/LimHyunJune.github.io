@@ -123,13 +123,13 @@ spec:
 
 ### Pod에서 실행 중인 애플리케이션에 접근
 1) pod 접속 <br>
-  `kubectl exec -it hello-kiamol sh`
+  `kubectl exec -it hello-kiamol sh` <br>
 2) pod log 출력 <br>
-  `kubectl logs --tail=2 hello-kiamol`
+  `kubectl logs --tail=2 hello-kiamol` <br>
 3) deployment를 통해서 pod에서 명령 실행 <br>
-  `kubectl exec deploy/hello-kiamol --sh -c 'wget -O - http://localhost > /dev/null`
+  `kubectl exec deploy/hello-kiamol --sh -c 'wget -O - http://localhost > /dev/null` <br>
 4) pod 속 컨테이너에서 local로 파일 복사 <br>
-  `kubectl cp hello-kiamol:usr/share/nginx/html/index.html /tmp/index.html`
+  `kubectl cp hello-kiamol:usr/share/nginx/html/index.html /tmp/index.html` <br>
 
 <br>
 <hr>
